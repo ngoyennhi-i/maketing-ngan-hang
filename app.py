@@ -1,12 +1,36 @@
-st.subheader("🔑 Đăng nhập Admin")
+)
+
+
+# ==========================================
+# TRANG ADMIN
+# ==========================================
+
+elif page == "🔐 Admin":
+
+    st.title("🔐 ADMIN")
+
+    st.divider()
+
+
+    # ======================================
+    # ĐĂNG NHẬP
+    # ======================================
+
+    if "admin_logged_in" not in st.session_state:
+
+        st.session_state.admin_logged_in = False
+
+
+    if not st.session_state.admin_logged_in:
 
         password = st.text_input(
-            "Mật khẩu",
+            "🔑 Mật khẩu",
             type="password"
         )
 
+
         if st.button(
-            "Đăng nhập",
+            "ĐĂNG NHẬP",
             type="primary"
         ):
 
@@ -14,25 +38,32 @@ st.subheader("🔑 Đăng nhập Admin")
 
                 st.session_state.admin_logged_in = True
 
-                st.success("✅ Đăng nhập thành công!")
-
                 st.rerun()
 
             else:
 
-                st.error("❌ Sai mật khẩu.")
+                st.error(
+                    "❌ Sai mật khẩu."
+                )
+
+
+    # ======================================
+    # ADMIN ĐÃ ĐĂNG NHẬP
+    # ======================================
 
     else:
 
-        # =========================
-        # HEADER ADMIN
-        # =========================
+        col1, col2 = st.columns(
+            [5, 1]
+        )
 
-        col1, col2 = st.columns([5, 1])
 
         with col1:
 
-            st.subheader("📊 Danh sách khách hàng")
+            st.subheader(
+                "📊 DANH SÁCH KHÁCH HÀNG"
+            )
+
 
         with col2:
 
@@ -42,34 +73,48 @@ st.subheader("🔑 Đăng nhập Admin")
 
                 st.rerun()
 
-        # =========================
-        # LẤY DỮ LIỆU
-        # =========================
 
-        df = get_customers()
+        st.divider()
 
-        if df.empty:
+
+        # ==================================
+        # KIỂM TRA DỮ LIỆU
+        # ==================================
+
+        if len(st.session_state.customers) == 0:
 
             st.info(
-                "📭 Chưa có thông tin khách hàng."
+                "📭 Chưa có khách hàng."
             )
+
 
         else:
 
-            # =========================
-            # THỐNG KÊ
-            # =========================
+            # ==============================
+            # CHUYỂN SANG DATAFRAME
+            # ==============================
+
+            df = pd.DataFrame(
+                st.session_state.customers
+            )
+
+
+            # ==============================
+            # TỔNG KHÁCH HÀNG
+            # ==============================
 
             st.metric(
                 "👥 Tổng số khách hàng",
                 len(df)
             )
 
+
             st.divider()
 
-            # =========================
-            # HIỂN THỊ BẢNG
-            # =========================
+
+            # ==============================
+            # HIỂN THỊ DANH SÁCH
+            # ==============================
 
             st.dataframe(
                 df,
@@ -77,13 +122,16 @@ st.subheader("🔑 Đăng nhập Admin")
                 hide_index=True
             )
 
+
             st.divider()
 
-            # =========================
-            # XUẤT EXCEL
-            # =========================
 
-            excel_file = export_excel(df)
+            # ==============================
+            # XUẤT EXCEL
+            # ==============================
+
+            excel_file = export_excel()
+
 
             st.download_button(
                 label="📥 XUẤT FILE EXCEL",
@@ -95,30 +143,3 @@ st.subheader("🔑 Đăng nhập Admin")
                 ),
                 use_container_width=True
             )
-
-            st.divider()
-
-            # =========================
-            # XÓA KHÁCH HÀNG
-            # =========================
-
-            st.subheader("🗑️ Xóa khách hàng")
-
-            customer_id = st.number_input(
-                "Nhập STT khách hàng cần xóa",
-                min_value=1,
-                step=1
-            )
-
-            if st.button(
-                "🗑️ XÓA KHÁCH HÀNG",
-                type="secondary"
-            ):
-
-                delete_customer(customer_id)
-
-                st.success(
-                    "✅ Đã xóa khách hàng."
-                )
-
-                st.rerun()
